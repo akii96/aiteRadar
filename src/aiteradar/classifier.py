@@ -110,6 +110,7 @@ class Classifier:
 
         text = "\n".join([_string_value(pr, "title"), _string_value(pr, "body")])
         self._apply_rules(text, self.text_rules, source="text", labels=labels, reasons=reasons)
+        self._add_state_label(pr, labels, reasons)
 
         self._add_fallbacks(labels, reasons)
 
@@ -142,6 +143,21 @@ class Classifier:
                         matched=matched,
                     )
                 )
+
+    def _add_state_label(self, pr: Any, labels: set[str], reasons: list[MatchReason]) -> None:
+        state = _string_value(pr, "state")
+        if state not in {"merged", "open_pr"}:
+            return
+        labels.add(state)
+        reasons.append(
+            MatchReason(
+                label=state,
+                source="state",
+                rule="pull-request-state",
+                pattern="state",
+                matched=state,
+            )
+        )
 
     def _add_fallbacks(self, labels: set[str], reasons: list[MatchReason]) -> None:
         required_prefixes = {

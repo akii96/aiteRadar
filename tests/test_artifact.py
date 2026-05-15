@@ -16,8 +16,10 @@ def test_artifact_contains_summary_and_unclassified(tmp_path) -> None:
         html_url="https://github.com/ROCm/aiter/pull/1",
         author="octocat",
         body="",
-        merged_at="2026-05-14T00:00:00Z",
-        merge_commit_sha="merge",
+        state="open_pr",
+        opened_at="2026-05-14T00:00:00Z",
+        merged_at=None,
+        merge_commit_sha=None,
         files=[{"filename": "misc/file.txt", "status": "modified", "additions": 1, "deletions": 0, "changes": 1}],
         commits=[{"sha": "sha1"}],
     )
@@ -35,9 +37,13 @@ def test_artifact_contains_summary_and_unclassified(tmp_path) -> None:
 
     assert artifact["summary"]["total_prs"] == 1
     assert artifact["summary"]["total_commits"] == 1
+    assert artifact["summary"]["state_counts"]["open_pr"] == 1
     assert artifact["summary"]["label_counts"]["type:misc"] == 1
+    assert artifact["summary"]["label_counts"]["open_pr"] == 1
+    assert artifact["prs"][0]["state"] == "open_pr"
+    assert artifact["prs"][0]["opened_at"] == "2026-05-14T00:00:00Z"
     assert artifact["unclassified"][0]["number"] == 1
 
     path = write_artifact(artifact, tmp_path)
-    assert path.name == "aiteradar_2026-05-15T02-00-00Z.json"
+    assert path.name == "aiteradar_2026-05-08_to_2026-05-15.json"
     assert json.loads(path.read_text(encoding="utf-8"))["generated_at"] == "2026-05-15T02:00:00Z"

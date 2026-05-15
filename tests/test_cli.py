@@ -19,6 +19,8 @@ def test_cli_dry_run_outputs_json(monkeypatch, capsys) -> None:
                     html_url="https://github.com/ROCm/aiter/pull/42",
                     author="dev",
                     body="new kernel",
+                    state="merged",
+                    opened_at="2026-05-13T00:00:00Z",
                     merged_at="2026-05-14T00:00:00Z",
                     merge_commit_sha="merge",
                     files=[{"filename": "csrc/kernels/cache_kernels.cu"}],
@@ -35,4 +37,6 @@ def test_cli_dry_run_outputs_json(monkeypatch, capsys) -> None:
     assert payload["period_start"] == "2026-05-08"
     assert payload["period_end"] == "2026-05-15"
     assert payload["prs"][0]["number"] == 42
+    assert payload["prs"][0]["state"] == "merged"
     assert "model:minimax" in payload["prs"][0]["labels"]
+    assert "merged" in payload["prs"][0]["labels"]

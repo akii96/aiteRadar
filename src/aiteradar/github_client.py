@@ -28,10 +28,16 @@ class PullRequestRecord:
     html_url: str
     author: str
     body: str
-    merged_at: str
+    state: str
+    opened_at: str
+    merged_at: str | None
     merge_commit_sha: str | None
     files: list[dict[str, Any]]
     commits: list[dict[str, Any]]
+
+    @property
+    def event_at(self) -> str:
+        return self.merged_at if self.state == "merged" and self.merged_at else self.opened_at
 
 
 def _default_transport(url: str, headers: dict[str, str]) -> tuple[int, Message, bytes]:
@@ -56,34 +62,30 @@ class GitHubClient:
         self.transport = transport
 
     def fetch_weekly_records(self, start: date | datetime | str, end: date | datetime | str) -> list[PullRequestRecord]:
-        """Fetch merged PRs, changed files, and commit metadata for a time window."""
+        """Fetch merged and opened PRs, changed files, and commit metadata for a time window."""
 
         records: list[PullRequestRecord] = []
         for item in self.search_merged_prs(start, end):
-            number = int(item["number"])
-            pull = self.get_pull(number)
-            if not pull.get("merged_at"):
-                continue
-            records.append(
-                PullRequestRecord(
-                    number=number,
-                    title=str(pull.get("title") or item.get("title") or ""),
-                    html_url=str(pull.get("html_url") or item.get("html_url") or ""),
-                    author=str((pull.get("user") or {}).get("login") or ""),
-                    body=str(pull.get("body") or ""),
-                    merged_at=str(pull["merged_at"]),
-                    merge_commit_sha=pull.get("merge_commit_sha"),
-                    files=self.get_pull_files(number),
-                    commits=self.get_pull_commits(number),
-                )
-            )
-        return sorted(records, key=lambda record: (record.merged_at, record.number))
+            record = self._build_record(item, state="merged")
+            if record.merged_at:
+                records.append(record)
+        for item in self.search_open_prs(start, end):
+            records.append(self._build_record(item, state="open_pr"))
+        return sorted(records, key=lambda record: (record.event_at, record.number))
 
     def search_merged_prs(self, start: date | datetime | str, end: date | datetime | str) -> list[dict[str, Any]]:
         start_s = _format_github_date(start)
         end_s = _format_github_date(end)
         query = f"repo:{self.repo} is:pr is:merged merged:{start_s}..{end_s}"
         params = urlencode({"q": query, "sort": "updated", "order": "asc", "per_page": "100"})
+        payloads = self._paginate(f"/search/issues?{params}", item_key="items")
+        return [item for page in payloads for item in page]
+
+    def search_open_prs(self, start: date | datetime | str, end: date | datetime | str) -> list[dict[str, Any]]:
+        start_s = _format_github_date(start)
+        end_s = _format_github_date(end)
+        query = f"repo:{self.repo} is:pr is:open created:{start_s}..{end_s}"
+        params = urlencode({"q": query, "sort": "created", "order": "asc", "per_page": "100"})
         payloads = self._paginate(f"/search/issues?{params}", item_key="items")
         return [item for page in payloads for item in page]
 
@@ -97,6 +99,23 @@ class GitHubClient:
     def get_pull_commits(self, number: int) -> list[dict[str, Any]]:
         pages = self._paginate(f"/repos/{self.repo}/pulls/{number}/commits?per_page=100")
         return [item for page in pages for item in page]
+
+    def _build_record(self, item: dict[str, Any], state: str) -> PullRequestRecord:
+        number = int(item["number"])
+        pull = self.get_pull(number)
+        return PullRequestRecord(
+            number=number,
+            title=str(pull.get("title") or item.get("title") or ""),
+            html_url=str(pull.get("html_url") or item.get("html_url") or ""),
+            author=str((pull.get("user") or {}).get("login") or ""),
+            body=str(pull.get("body") or ""),
+            state=state,
+            opened_at=str(pull.get("created_at") or item.get("created_at") or ""),
+            merged_at=pull.get("merged_at"),
+            merge_commit_sha=pull.get("merge_commit_sha"),
+            files=self.get_pull_files(number),
+            commits=self.get_pull_commits(number),
+        )
 
     def _get_json(self, path_or_url: str) -> JsonValue:
         status, _headers, body = self.transport(self._absolute_url(path_or_url), self._headers())
