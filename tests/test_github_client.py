@@ -69,7 +69,7 @@ def test_fetch_weekly_records_includes_merged_and_open_prs() -> None:
                 "body": "new kernel",
                 "created_at": "2026-05-15T00:00:00Z",
                 "merged_at": None,
-                "merge_commit_sha": None,
+                "merge_commit_sha": "github-test-merge-sha",
             }
         elif url.endswith("/pulls/10/files?per_page=100"):
             payload = [{"filename": "aiter/configs/model_configs/kimik2_bf16_tuned_gemm.csv"}]
@@ -95,4 +95,5 @@ def test_fetch_weekly_records_includes_merged_and_open_prs() -> None:
     assert records[1].number == 11
     assert records[1].state == "open_pr"
     assert records[1].merged_at is None
+    assert records[1].merge_commit_sha is None
     assert records[1].commits[0]["sha"] == "open-sha"

@@ -1,6 +1,6 @@
 version: 1
 fallback_labels:
-  - model:unknown
+  - model:general
   - type:misc
   - kernel:misc
 

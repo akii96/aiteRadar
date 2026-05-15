@@ -4,8 +4,9 @@ AiteRadar tracks merged and newly opened PRs in
 [ROCm/AITER](https://github.com/ROCm/aiter) and bins them into deterministic
 labels for weekly JSON changelogs.
 
-It does not use an LLM. Labels come from editable path, title, and body rules in
-`src/aiteradar/rules.yaml`.
+It does not use an LLM. Labels come from editable path and title rules in
+`src/aiteradar/rules.yaml`; PR bodies are intentionally ignored to avoid
+over-classifying copied context, checklists, and broad release-note text.
 
 ## Usage
 
@@ -37,9 +38,10 @@ Each run writes a timestamped JSON file such as:
 changelogs/aiteradar_2026-05-11_to_2026-05-18.json
 ```
 
-The artifact includes the query window, state counts, label counts, PR metadata,
-changed files, commit SHAs, labels, and rule reasons. Merged PRs receive the
-`merged` label; PRs opened during the same window receive the `open_pr` label.
+The artifact includes the query window, state counts, primary and auxiliary
+label counts, PR metadata, changed files, commit SHAs, labels, and capped rule
+reasons. Merged PRs receive the `merged` label; PRs opened during the same
+window receive the `open_pr` label.
 
 ## Automation
 

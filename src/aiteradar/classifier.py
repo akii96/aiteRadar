@@ -10,6 +10,8 @@ from typing import Any
 
 import yaml
 
+MAX_REASONS_PER_LABEL = 3
+
 
 @dataclass(frozen=True)
 class MatchReason:
@@ -51,11 +53,15 @@ class CompiledRule:
 @dataclass(frozen=True)
 class Classification:
     labels: list[str]
+    primary_labels: list[str]
+    auxiliary_labels: list[str]
     reasons: list[MatchReason]
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "labels": self.labels,
+            "primary_labels": self.primary_labels,
+            "auxiliary_labels": self.auxiliary_labels,
             "reasons": [reason.to_dict() for reason in self.reasons],
         }
 
@@ -108,15 +114,18 @@ class Classifier:
                 reasons=reasons,
             )
 
-        text = "\n".join([_string_value(pr, "title"), _string_value(pr, "body")])
-        self._apply_rules(text, self.text_rules, source="text", labels=labels, reasons=reasons)
+        title = _string_value(pr, "title")
+        self._apply_rules(title, self.text_rules, source="title", labels=labels, reasons=reasons)
         self._add_state_label(pr, labels, reasons)
 
         self._add_fallbacks(labels, reasons)
+        primary_labels, auxiliary_labels = split_primary_auxiliary_labels(labels)
 
         return Classification(
             labels=sorted(labels),
-            reasons=sorted(reasons, key=lambda item: (item.label, item.source, item.rule, item.matched)),
+            primary_labels=primary_labels,
+            auxiliary_labels=auxiliary_labels,
+            reasons=_dedupe_and_cap_reasons(reasons),
         )
 
     def _apply_rules(
@@ -161,7 +170,7 @@ class Classifier:
 
     def _add_fallbacks(self, labels: set[str], reasons: list[MatchReason]) -> None:
         required_prefixes = {
-            "model:": "model:unknown",
+            "model:": "model:general",
             "type:": "type:misc",
             "kernel:": "kernel:misc",
         }
@@ -177,6 +186,32 @@ class Classifier:
                         matched="",
                     )
                 )
+
+
+AUXILIARY_LABELS = {"backend:python-api", "type:tests"}
+
+
+def split_primary_auxiliary_labels(labels: set[str]) -> tuple[list[str], list[str]]:
+    auxiliary = {label for label in labels if label in AUXILIARY_LABELS}
+    primary = set(labels) - auxiliary
+    return sorted(primary), sorted(auxiliary)
+
+
+def _dedupe_and_cap_reasons(reasons: list[MatchReason]) -> list[MatchReason]:
+    sorted_reasons = sorted(reasons, key=lambda item: (item.label, item.source, item.rule, item.matched))
+    seen: set[tuple[str, str, str, str]] = set()
+    counts: dict[str, int] = {}
+    capped: list[MatchReason] = []
+    for reason in sorted_reasons:
+        key = (reason.label, reason.source, reason.rule, reason.matched)
+        if key in seen:
+            continue
+        seen.add(key)
+        if counts.get(reason.label, 0) >= MAX_REASONS_PER_LABEL:
+            continue
+        counts[reason.label] = counts.get(reason.label, 0) + 1
+        capped.append(reason)
+    return capped
 
 
 def _filenames(pr: Any) -> list[str]:

@@ -112,7 +112,7 @@ class GitHubClient:
             state=state,
             opened_at=str(pull.get("created_at") or item.get("created_at") or ""),
             merged_at=pull.get("merged_at"),
-            merge_commit_sha=pull.get("merge_commit_sha"),
+            merge_commit_sha=pull.get("merge_commit_sha") if state == "merged" else None,
             files=self.get_pull_files(number),
             commits=self.get_pull_commits(number),
         )

@@ -39,9 +39,13 @@ def test_artifact_contains_summary_and_unclassified(tmp_path) -> None:
     assert artifact["summary"]["total_commits"] == 1
     assert artifact["summary"]["state_counts"]["open_pr"] == 1
     assert artifact["summary"]["label_counts"]["type:misc"] == 1
+    assert artifact["summary"]["primary_label_counts"]["type:misc"] == 1
+    assert artifact["summary"]["auxiliary_label_counts"] == {}
     assert artifact["summary"]["label_counts"]["open_pr"] == 1
     assert artifact["prs"][0]["state"] == "open_pr"
     assert artifact["prs"][0]["opened_at"] == "2026-05-14T00:00:00Z"
+    assert artifact["prs"][0]["primary_labels"] == ["kernel:misc", "model:general", "open_pr", "type:misc"]
+    assert artifact["prs"][0]["auxiliary_labels"] == []
     assert artifact["unclassified"][0]["number"] == 1
 
     path = write_artifact(artifact, tmp_path)

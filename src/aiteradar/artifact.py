@@ -11,7 +11,7 @@ from typing import Any
 from aiteradar.classifier import Classification
 
 
-FALLBACK_LABELS = {"model:unknown", "type:misc", "kernel:misc"}
+FALLBACK_LABELS = {"model:general", "type:misc", "kernel:misc"}
 STATE_LABELS = {"merged", "open_pr"}
 
 
@@ -28,6 +28,8 @@ def build_artifact(
     generated = generated_at or datetime.now(timezone.utc)
     pr_entries = [_pr_entry(record, classifications[record.number]) for record in records]
     label_counts = Counter(label for entry in pr_entries for label in entry["labels"])
+    primary_label_counts = Counter(label for entry in pr_entries for label in entry["primary_labels"])
+    auxiliary_label_counts = Counter(label for entry in pr_entries for label in entry["auxiliary_labels"])
     total_files = sum(len(entry["changed_files"]) for entry in pr_entries)
     total_commits = sum(len(entry["commit_shas"]) for entry in pr_entries)
     state_counts = Counter(entry["state"] for entry in pr_entries)
@@ -44,6 +46,8 @@ def build_artifact(
             "total_files": total_files,
             "state_counts": dict(sorted(state_counts.items())),
             "label_counts": dict(sorted(label_counts.items())),
+            "primary_label_counts": dict(sorted(primary_label_counts.items())),
+            "auxiliary_label_counts": dict(sorted(auxiliary_label_counts.items())),
         },
         "prs": pr_entries,
         "unclassified": [
@@ -85,6 +89,8 @@ def _pr_entry(record: Any, classification: Classification) -> dict[str, Any]:
         "changed_files": [_file_entry(file_item) for file_item in record.files],
         "commit_shas": [str(commit.get("sha")) for commit in record.commits if commit.get("sha")],
         "labels": classification.labels,
+        "primary_labels": classification.primary_labels,
+        "auxiliary_labels": classification.auxiliary_labels,
         "reasons": [reason.to_dict() for reason in classification.reasons],
     }
 

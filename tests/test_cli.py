@@ -40,3 +40,4 @@ def test_cli_dry_run_outputs_json(monkeypatch, capsys) -> None:
     assert payload["prs"][0]["state"] == "merged"
     assert "model:minimax" in payload["prs"][0]["labels"]
     assert "merged" in payload["prs"][0]["labels"]
+    assert "backend:python-api" not in payload["prs"][0]["primary_labels"]
