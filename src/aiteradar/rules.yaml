@@ -1,0 +1,198 @@
+version: 1
+fallback_labels:
+  - model:unknown
+  - type:misc
+  - kernel:misc
+
+path_rules:
+  - name: docs
+    pattern: '(^|/)docs/'
+    labels: [type:docs]
+  - name: tests
+    pattern: '(^|/)op_tests/|(^|/)tests/'
+    labels: [type:tests]
+  - name: ci-release
+    pattern: '^\.github/|release|wheel|manylinux|requirements|setup\.py|pyproject\.toml'
+    labels: [type:ci-release, type:build-packaging]
+  - name: model-configs
+    pattern: 'aiter/configs/model_configs/'
+    labels: [type:tuning-config]
+  - name: general-configs
+    pattern: 'aiter/configs/.*\.(csv|json)$|aiter/ops/triton/configs/'
+    labels: [type:tuning-config]
+  - name: triton
+    pattern: 'aiter/(ops|aot)/triton/'
+    labels: [backend:triton]
+  - name: gluon
+    pattern: '_gluon_kernels|gluon'
+    labels: [backend:gluon, backend:triton]
+  - name: flydsl
+    pattern: 'aiter/(ops|aot)/flydsl/|flydsl'
+    labels: [backend:flydsl]
+  - name: composable-kernel
+    pattern: '3rdparty/(composable_kernel|ck_helper)|ck_tile|composable.?kernel'
+    labels: [backend:ck]
+  - name: hip-cpp
+    pattern: '(^|/)csrc/|(^|/)hsa/|\.(cu|cpp|cc|cxx|hpp|h)$'
+    labels: [backend:hip-cpp]
+  - name: python-api
+    pattern: '^aiter/.*\.py$'
+    labels: [backend:python-api]
+  - name: asm
+    pattern: '(^|/)asm|assembly|\.s$'
+    labels: [backend:asm]
+  - name: gemm
+    pattern: 'gemm|matmul|linear'
+    labels: [kernel:gemm]
+  - name: moe
+    pattern: '(^|[_/-])moe|fmoe|expert'
+    labels: [kernel:moe]
+  - name: attention
+    pattern: 'attention|fmha|mha|mqa|paged.?attention|pa_decode|flash_attn'
+    labels: [kernel:attention]
+  - name: mla
+    pattern: '(^|[_/-])mla|latent_attention'
+    labels: [kernel:mla]
+  - name: norm
+    pattern: 'rmsnorm|layernorm|(^|[_/-])norm'
+    labels: [kernel:norm]
+  - name: quant
+    pattern: 'quant|fp8|fp4|a8w8|a8w4|a4w4|mxfp|int4|i4'
+    labels: [kernel:quant]
+  - name: cache
+    pattern: 'cache|kv_cache|kvcache'
+    labels: [kernel:cache]
+  - name: communication
+    pattern: 'allreduce|all_reduce|all2all|communicat|dist/'
+    labels: [kernel:communication]
+  - name: activation
+    pattern: 'silu|swiglu|gelu|activation|act_mul'
+    labels: [kernel:activation]
+  - name: gfx942
+    pattern: 'gfx942|mi300|mi308|mi325'
+    labels: [arch:gfx942, hardware:mi300]
+  - name: gfx950
+    pattern: 'gfx950|mi355|mi35x'
+    labels: [arch:gfx950, hardware:mi355x]
+  - name: gfx1201
+    pattern: 'gfx1201|rdna4'
+    labels: [arch:gfx1201, hardware:rdna4]
+  - name: gfx1250
+    pattern: 'gfx1250|mi450'
+    labels: [arch:gfx1250, hardware:mi450]
+  - name: deepseek-path
+    pattern: '(^|[_/-])(ds|dsv|deepseek)[_-]?(v?3|v?4|r1|v3\.2)?|dsv3|dsv4'
+    labels: [model:deepseek]
+  - name: minimax-path
+    pattern: 'minimax|mini.?max|m2[_-]?5|m25'
+    labels: [model:minimax]
+  - name: kimi-path
+    pattern: 'kimi|kimik2|k2[_-]?5'
+    labels: [model:kimi]
+  - name: qwen-path
+    pattern: 'qwen'
+    labels: [model:qwen]
+  - name: glm-path
+    pattern: '(^|[_/-])glm'
+    labels: [model:glm]
+  - name: gptoss-path
+    pattern: 'gpt.?oss'
+    labels: [model:gpt-oss]
+  - name: llama-path
+    pattern: 'llama'
+    labels: [model:llama]
+
+text_rules:
+  - name: bugfix-text
+    pattern: '\b(fix|fixed|bug|oob|out.of.bounds|mem violation|crash|regression|incorrect|wrong)\b'
+    labels: [type:bugfix]
+  - name: new-kernel-text
+    pattern: '\b(add|adds|added|new|support|enable|implement)\b.*\b(kernel|op|operator|fusion|backend|support)\b'
+    labels: [type:new-kernel]
+  - name: refactor-text
+    pattern: '\b(refactor|cleanup|rename|remove dead|deprecate)\b'
+    labels: [type:refactor]
+  - name: tuning-text
+    pattern: '\b(tune|tuned|retune|config|configuration|perf|performance)\b'
+    labels: [type:tuning-config]
+  - name: docs-text
+    pattern: '\b(docs?|newsletter|readme|documentation)\b'
+    labels: [type:docs]
+  - name: tests-text
+    pattern: '\b(test|tests|pytest|benchmark|bench)\b'
+    labels: [type:tests]
+  - name: ci-release-text
+    pattern: '\b(ci|workflow|release|wheel|packag|manylinux|torch_pin)\b'
+    labels: [type:ci-release, type:build-packaging]
+  - name: deepseek-text
+    pattern: '\b(deepseek|dsv3|dsv4|ds[-_ ]?v3|ds[-_ ]?v4|deepseek[-_ ]?v3|deepseek[-_ ]?v4|r1)\b'
+    labels: [model:deepseek]
+  - name: minimax-text
+    pattern: '\b(minimax(?:[-_ ]?m?2\.?5)?|mini[-_ ]?max|m2\.?5|m25)\b'
+    labels: [model:minimax]
+  - name: kimi-text
+    pattern: '\b(kimi|kimi[-_ ]?k2|k2\.?5)\b'
+    labels: [model:kimi]
+  - name: qwen-text
+    pattern: '\bqwen\b'
+    labels: [model:qwen]
+  - name: glm-text
+    pattern: '\bglm\b'
+    labels: [model:glm]
+  - name: gptoss-text
+    pattern: '\bgpt[-_ ]?oss\b'
+    labels: [model:gpt-oss]
+  - name: llama-text
+    pattern: '\bllama\b'
+    labels: [model:llama]
+  - name: gemm-text
+    pattern: '\b(gemm|matmul)\b'
+    labels: [kernel:gemm]
+  - name: moe-text
+    pattern: '\b(moe|fmoe|expert)\b'
+    labels: [kernel:moe]
+  - name: attention-text
+    pattern: '\b(attention|fmha|mha|mqa|paged attention|flash attention|decode)\b'
+    labels: [kernel:attention]
+  - name: mla-text
+    pattern: '\bmla\b|latent attention'
+    labels: [kernel:mla]
+  - name: quant-text
+    pattern: '\b(quant|fp8|fp4|a8w8|a8w4|a4w4|mxfp|int4|i4)\b'
+    labels: [kernel:quant]
+  - name: cache-text
+    pattern: '\b(cache|kv cache|kvcache)\b'
+    labels: [kernel:cache]
+  - name: norm-text
+    pattern: '\b(rmsnorm|layernorm|norm)\b'
+    labels: [kernel:norm]
+  - name: communication-text
+    pattern: '\b(allreduce|all reduce|all2all|communicator|distributed)\b'
+    labels: [kernel:communication]
+  - name: triton-text
+    pattern: '\btriton\b'
+    labels: [backend:triton]
+  - name: gluon-text
+    pattern: '\bgluon\b'
+    labels: [backend:gluon, backend:triton]
+  - name: flydsl-text
+    pattern: '\bflydsl\b'
+    labels: [backend:flydsl]
+  - name: ck-text
+    pattern: '\b(ck_tile|composable kernel)\b'
+    labels: [backend:ck]
+  - name: asm-text
+    pattern: '\basm\b'
+    labels: [backend:asm]
+  - name: gfx950-text
+    pattern: '\b(gfx950|mi355x|mi35x)\b'
+    labels: [arch:gfx950, hardware:mi355x]
+  - name: gfx942-text
+    pattern: '\b(gfx942|mi300|mi308|mi325x)\b'
+    labels: [arch:gfx942, hardware:mi300]
+  - name: gfx1201-text
+    pattern: '\b(gfx1201|rdna4)\b'
+    labels: [arch:gfx1201, hardware:rdna4]
+  - name: gfx1250-text
+    pattern: '\b(gfx1250|mi450)\b'
+    labels: [arch:gfx1250, hardware:mi450]

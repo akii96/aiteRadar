@@ -1,0 +1,51 @@
+[
+  {
+    "number": 3171,
+    "title": "Remove triton backend in dsv4_bf16_tuned_gemm.csv",
+    "body": "Retune DSv4-Pro BF16 GEMM configs for gfx950.",
+    "files": [
+      {
+        "filename": "aiter/configs/model_configs/dsv4_bf16_tuned_gemm.csv",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 5,
+        "changes": 10
+      }
+    ]
+  },
+  {
+    "number": 3185,
+    "title": "Add fused DeepSeek-V3.2 indexer cache kernel",
+    "body": "Adds qk rope quant and cache support.",
+    "files": [
+      {
+        "filename": "csrc/kernels/cache_kernels.cu",
+        "status": "modified",
+        "additions": 343,
+        "deletions": 0,
+        "changes": 343
+      },
+      {
+        "filename": "aiter/ops/cache.py",
+        "status": "modified",
+        "additions": 23,
+        "deletions": 0,
+        "changes": 23
+      }
+    ]
+  },
+  {
+    "number": 3174,
+    "title": "[TRITON][GLUON] Add fp8_mqa_logits gluon kernel for gfx950 and gfx1250",
+    "body": "Attention logits support for multiple arches.",
+    "files": [
+      {
+        "filename": "aiter/ops/triton/_gluon_kernels/gfx950/attention/fp8_mqa_logits.py",
+        "status": "added",
+        "additions": 702,
+        "deletions": 0,
+        "changes": 702
+      }
+    ]
+  }
+]

@@ -1,0 +1,75 @@
+name: Weekly AiteRadar
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "Optional start date, YYYY-MM-DD"
+        required: false
+        type: string
+      end:
+        description: "Optional end date, YYYY-MM-DD"
+        required: false
+        type: string
+      dry_run:
+        description: "Print JSON without committing a changelog"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install AiteRadar
+        run: python -m pip install -e ".[test]"
+
+      - name: Run tests
+        run: pytest
+
+      - name: Generate changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          START_DATE: ${{ github.event.inputs.start }}
+          END_DATE: ${{ github.event.inputs.end }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          args=(--output-dir changelogs)
+          if [ -n "${START_DATE}" ]; then
+            args+=(--start "${START_DATE}")
+          fi
+          if [ -n "${END_DATE}" ]; then
+            args+=(--end "${END_DATE}")
+          fi
+          if [ "${DRY_RUN}" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          aiteradar "${args[@]}"
+
+      - name: Commit changelog
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          RUN_DATE: ${{ github.run_id }}
+        run: |
+          if [ -z "$(git status --porcelain -- changelogs)" ]; then
+            echo "No changelog changes to commit."
+            exit 0
+          fi
+          git add changelogs/*.json
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Add AiteRadar changelog ${RUN_DATE}"
+          git push

@@ -1,0 +1,99 @@
+"""JSON artifact generation for AiteRadar."""
+
+from __future__ import annotations
+
+import json
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from aiteradar.classifier import Classification
+
+
+FALLBACK_LABELS = {"model:unknown", "type:misc", "kernel:misc"}
+
+
+def build_artifact(
+    *,
+    records: list[Any],
+    classifications: dict[int, Classification],
+    period_start: str,
+    period_end: str,
+    source_repo: str,
+    rule_version: int,
+    generated_at: datetime | None = None,
+) -> dict[str, Any]:
+    generated = generated_at or datetime.now(timezone.utc)
+    pr_entries = [_pr_entry(record, classifications[record.number]) for record in records]
+    label_counts = Counter(label for entry in pr_entries for label in entry["labels"])
+    total_files = sum(len(entry["changed_files"]) for entry in pr_entries)
+    total_commits = sum(len(entry["commit_shas"]) for entry in pr_entries)
+
+    return {
+        "generated_at": _iso_z(generated),
+        "period_start": period_start,
+        "period_end": period_end,
+        "source_repo": source_repo,
+        "rule_version": rule_version,
+        "summary": {
+            "total_prs": len(pr_entries),
+            "total_commits": total_commits,
+            "total_files": total_files,
+            "label_counts": dict(sorted(label_counts.items())),
+        },
+        "prs": pr_entries,
+        "unclassified": [
+            {
+                "number": entry["number"],
+                "title": entry["title"],
+                "url": entry["url"],
+                "labels": entry["labels"],
+            }
+            for entry in pr_entries
+            if set(entry["labels"]).issubset(FALLBACK_LABELS)
+        ],
+    }
+
+
+def write_artifact(artifact: dict[str, Any], output_dir: str | Path) -> Path:
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generated_at = str(artifact["generated_at"]).replace(":", "-")
+    output_path = out_dir / f"aiteradar_{generated_at}.json"
+    output_path.write_text(
+        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return output_path
+
+
+def _pr_entry(record: Any, classification: Classification) -> dict[str, Any]:
+    return {
+        "number": record.number,
+        "title": record.title,
+        "url": record.html_url,
+        "author": record.author,
+        "merged_at": record.merged_at,
+        "merge_commit_sha": record.merge_commit_sha,
+        "changed_files": [_file_entry(file_item) for file_item in record.files],
+        "commit_shas": [str(commit.get("sha")) for commit in record.commits if commit.get("sha")],
+        "labels": classification.labels,
+        "reasons": [reason.to_dict() for reason in classification.reasons],
+    }
+
+
+def _file_entry(file_item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "filename": file_item.get("filename"),
+        "status": file_item.get("status"),
+        "additions": file_item.get("additions", 0),
+        "deletions": file_item.get("deletions", 0),
+        "changes": file_item.get("changes", 0),
+    }
+
+
+def _iso_z(value: datetime) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
