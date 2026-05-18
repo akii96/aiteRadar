@@ -1,8 +1,9 @@
 version: 1
 fallback_labels:
+  - component:general
   - model:general
   - type:misc
-  - kernel:misc
+  - hardware:amd
 
 path_rules:
   - name: docs
@@ -43,43 +44,43 @@ path_rules:
     labels: [backend:asm]
   - name: gemm
     pattern: 'gemm|matmul|linear'
-    labels: [kernel:gemm]
+    labels: [kernel:gemm, component:kernels]
   - name: moe
-    pattern: '(^|[_/-])moe|fmoe|expert'
-    labels: [kernel:moe]
+    pattern: '(^|[_/-])moe|fmoe|\bexpert\b'
+    labels: [kernel:moe, component:moe]
   - name: attention
     pattern: 'attention|fmha|mha|mqa|paged.?attention|pa_decode|flash_attn'
-    labels: [kernel:attention]
+    labels: [kernel:attention, component:attention]
   - name: mla
     pattern: '(^|[_/-])mla|latent_attention'
-    labels: [kernel:mla]
+    labels: [kernel:mla, component:mla]
   - name: norm
     pattern: 'rmsnorm|layernorm|(^|[_/-])norm'
-    labels: [kernel:norm]
+    labels: [kernel:norm, component:kernels]
   - name: quant
     pattern: 'quant|fp8|fp4|a8w8|a8w4|a4w4|mxfp|int4|i4'
-    labels: [kernel:quant]
+    labels: [kernel:quant, component:quantization]
   - name: cache
     pattern: 'cache|kv_cache|kvcache'
-    labels: [kernel:cache]
+    labels: [kernel:cache, component:kv-cache]
   - name: communication
     pattern: 'allreduce|all_reduce|all2all|communicat|dist/'
-    labels: [kernel:communication]
+    labels: [kernel:communication, component:distributed]
   - name: activation
     pattern: 'silu|swiglu|gelu|activation|act_mul'
-    labels: [kernel:activation]
+    labels: [kernel:activation, component:kernels]
   - name: gfx942
     pattern: 'gfx942|mi300|mi308|mi325'
-    labels: [arch:gfx942, hardware:mi300]
+    labels: [hardware:amd, arch:gfx942]
   - name: gfx950
     pattern: 'gfx950|mi355|mi35x'
-    labels: [arch:gfx950, hardware:mi355x]
+    labels: [hardware:amd, arch:gfx950]
   - name: gfx1201
     pattern: 'gfx1201|rdna4'
-    labels: [arch:gfx1201, hardware:rdna4]
+    labels: [hardware:amd, arch:gfx1201]
   - name: gfx1250
     pattern: 'gfx1250|mi450'
-    labels: [arch:gfx1250, hardware:mi450]
+    labels: [hardware:amd, arch:gfx1250]
   - name: deepseek-path
     pattern: '(^|[_/-])(ds|dsv|deepseek)[_-]?(v?3|v?4|r1|v3\.2)?|dsv3|dsv4'
     labels: [model:deepseek]
@@ -147,28 +148,28 @@ text_rules:
     labels: [model:llama]
   - name: gemm-text
     pattern: '\b(gemm|matmul)\b'
-    labels: [kernel:gemm]
+    labels: [kernel:gemm, component:kernels]
   - name: moe-text
     pattern: '\b(moe|fmoe|expert)\b'
-    labels: [kernel:moe]
+    labels: [kernel:moe, component:moe]
   - name: attention-text
     pattern: '\b(attention|fmha|mha|mqa|paged attention|flash attention|decode)\b'
-    labels: [kernel:attention]
+    labels: [kernel:attention, component:attention]
   - name: mla-text
     pattern: '\bmla\b|latent attention'
-    labels: [kernel:mla]
+    labels: [kernel:mla, component:mla]
   - name: quant-text
     pattern: '\b(quant|fp8|fp4|a8w8|a8w4|a4w4|mxfp|int4|i4)\b'
-    labels: [kernel:quant]
+    labels: [kernel:quant, component:quantization]
   - name: cache-text
     pattern: '\b(cache|kv cache|kvcache)\b'
-    labels: [kernel:cache]
+    labels: [kernel:cache, component:kv-cache]
   - name: norm-text
     pattern: '\b(rmsnorm|layernorm|norm)\b'
-    labels: [kernel:norm]
+    labels: [kernel:norm, component:kernels]
   - name: communication-text
     pattern: '\b(allreduce|all reduce|all2all|communicator|distributed)\b'
-    labels: [kernel:communication]
+    labels: [kernel:communication, component:distributed]
   - name: triton-text
     pattern: '\btriton\b'
     labels: [backend:triton]
@@ -186,13 +187,13 @@ text_rules:
     labels: [backend:asm]
   - name: gfx950-text
     pattern: '\b(gfx950|mi355x|mi35x)\b'
-    labels: [arch:gfx950, hardware:mi355x]
+    labels: [hardware:amd, arch:gfx950]
   - name: gfx942-text
     pattern: '\b(gfx942|mi300|mi308|mi325x)\b'
-    labels: [arch:gfx942, hardware:mi300]
+    labels: [hardware:amd, arch:gfx942]
   - name: gfx1201-text
     pattern: '\b(gfx1201|rdna4)\b'
-    labels: [arch:gfx1201, hardware:rdna4]
+    labels: [hardware:amd, arch:gfx1201]
   - name: gfx1250-text
     pattern: '\b(gfx1250|mi450)\b'
-    labels: [arch:gfx1250, hardware:mi450]
+    labels: [hardware:amd, arch:gfx1250]

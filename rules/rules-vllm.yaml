@@ -1,0 +1,147 @@
+version: 1
+fallback_labels:
+  - component:general
+  - model:general
+  - type:misc
+
+path_rules:
+  - name: docs
+    pattern: '(^|/)docs/|README|\.md$'
+    labels: [type:docs]
+  - name: tests
+    pattern: '(^|/)tests/|(^|/)test_'
+    labels: [type:tests]
+  - name: ci-build
+    pattern: '^\.github/|\.buildkite/|Dockerfile|requirements|setup\.py|pyproject\.toml|CMakeLists'
+    labels: [type:ci-build]
+  - name: frontend
+    pattern: 'vllm/(entrypoints|engine/protocol)|openai|api_server'
+    labels: [component:frontend]
+  - name: kernels
+    pattern: 'vllm/_custom_ops/|csrc/|kernels/|\.cu$|\.cuh$'
+    labels: [component:kernels]
+  - name: attention
+    pattern: 'attention|flash_attn|paged_attention'
+    labels: [component:attention]
+  - name: moe
+    pattern: '\bmoe\b|mixture.of.experts|\bexpert\b'
+    labels: [component:moe]
+  - name: quantization
+    pattern: 'quant|fp8|fp4|int4|int8|w8a8|w4a16|awq|gptq|compressed'
+    labels: [component:quantization]
+  - name: kv-cache
+    pattern: 'kv.cache|kvcache|cache_engine'
+    labels: [component:kv-cache]
+  - name: distributed
+    pattern: 'distributed|tensor_parallel|pipeline_parallel|distributed_'
+    labels: [component:distributed]
+  - name: speculative
+    pattern: 'speculative|spec_decode|ngram|medusa|eagle|ddtree'
+    labels: [component:speculative-decode]
+  - name: multimodal
+    pattern: 'multi.?modal|vision|image|vlm'
+    labels: [component:multimodal]
+  - name: tool-calling
+    pattern: 'tool.call|function.call'
+    labels: [component:tool-calling]
+  - name: nvidia-cuda
+    pattern: 'cuda|nvidia|sm_|\.cu$'
+    labels: [hardware:nvidia]
+  - name: amd
+    pattern: 'rocm|hip|amd|gfx9|gfx10|gfx11|mi300|mi308'
+    labels: [hardware:amd]
+  - name: intel-xpu
+    pattern: 'xpu|intel.gpu|oneapi'
+    labels: [hardware:intel-xpu]
+  - name: cpu
+    pattern: '\bcpu\b|openvino|avx'
+    labels: [hardware:cpu]
+  - name: triton
+    pattern: 'triton'
+    labels: [backend:triton]
+  - name: flashinfer
+    pattern: 'flashinfer'
+    labels: [backend:flashinfer]
+
+text_rules:
+  - name: bugfix
+    pattern: '\b(fix|fixed|bug|bugfix|crash|regression|incorrect|wrong|broken)\b'
+    labels: [type:bugfix]
+  - name: feature
+    pattern: '\b(add|adds|added|new|feature|support|enable|implement)\b'
+    labels: [type:feature]
+  - name: perf
+    pattern: '\b(perf|performance|optim|faster|speed|reduce|overhead|improve.*throughput)\b'
+    labels: [type:perf]
+  - name: refactor
+    pattern: '\b(refactor|cleanup|rename|reorganize|deprecate)\b'
+    labels: [type:refactor]
+  - name: revert
+    pattern: '\brevert\b'
+    labels: [type:revert]
+  - name: deepseek
+    pattern: '\b(deepseek|ds[-_. ]?v[34]|dsv[34]|deepseek[-_ ]?r1|dsr1)\b'
+    labels: [model:deepseek]
+  - name: qwen
+    pattern: '\bqwen\b'
+    labels: [model:qwen]
+  - name: llama
+    pattern: '\bllama\b'
+    labels: [model:llama]
+  - name: mistral
+    pattern: '\bmistral\b'
+    labels: [model:mistral]
+  - name: gemma
+    pattern: '\bgemma\b'
+    labels: [model:gemma]
+  - name: mixtral
+    pattern: '\bmixtral\b'
+    labels: [model:mixtral]
+  - name: kv-connector
+    pattern: '\bkv.connector|disaggregat|prefill.decode.disagg\b'
+    labels: [component:kv-connector]
+  - name: moe-text
+    pattern: '\bmoe\b|mixture of experts'
+    labels: [component:moe]
+  - name: attention-text
+    pattern: '\b(attention|attn|fmha|mha|mqa|gqa)\b'
+    labels: [component:attention]
+  - name: quantization-text
+    pattern: '\b(quant|fp8|fp4|int4|int8|w8a8|awq|gptq)\b'
+    labels: [component:quantization]
+  - name: speculative-text
+    pattern: '\b(speculative|spec.decode|medusa|eagle)\b'
+    labels: [component:speculative-decode]
+  - name: tool-calling-text
+    pattern: '\btool.call|function.call\b'
+    labels: [component:tool-calling]
+  - name: multimodal-text
+    pattern: '\b(multimodal|multi.modal|vision|vlm)\b'
+    labels: [component:multimodal]
+  - name: kv-cache-text
+    pattern: '\bkv.cache|kvcache\b'
+    labels: [component:kv-cache]
+  - name: distributed-text
+    pattern: '\b(distributed|tensor.parallel|pipeline.parallel|tp|pp)\b'
+    labels: [component:distributed]
+  - name: nvidia-text
+    pattern: '\bnvidia|cuda|sm_\b'
+    labels: [hardware:nvidia]
+  - name: amd-text
+    pattern: '\brocm|hip|amd|mi300|mi308\b'
+    labels: [hardware:amd]
+  - name: xpu-text
+    pattern: '\bxpu|intel.gpu\b'
+    labels: [hardware:intel-xpu]
+  - name: cpu-text
+    pattern: '\bcpu|openvino\b'
+    labels: [hardware:cpu]
+  - name: triton-text
+    pattern: '\btriton\b'
+    labels: [backend:triton]
+  - name: flashinfer-text
+    pattern: '\bflashinfer\b'
+    labels: [backend:flashinfer]
+  - name: torch-compile
+    pattern: '\btorch.compile|fullgraph|inductor\b'
+    labels: [backend:torch-compile]

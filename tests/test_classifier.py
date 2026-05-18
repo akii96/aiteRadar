@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from aiteradar.classifier import Classifier
+from inferadar.classifier import Classifier
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "sample_prs.json"

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 
 from aiteradar import cli
-from aiteradar.github_client import PullRequestRecord
+from inferadar.github_client import PullRequestRecord
 
 
 def test_cli_dry_run_outputs_json(monkeypatch, capsys) -> None:
