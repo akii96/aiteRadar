@@ -1,0 +1,180 @@
+version: 1
+fallback_labels:
+  - component:general
+  - model:general
+  - type:misc
+
+path_rules:
+  - name: docs
+    pattern: '(^|/)docs/|README|\.md$'
+    labels: [type:docs]
+  - name: tests
+    pattern: '(^|/)test|benchmark'
+    labels: [type:tests]
+  - name: ci-build
+    pattern: '^\.github/|Dockerfile|requirements|setup\.py|pyproject\.toml|CMakeLists'
+    labels: [type:ci-build]
+  - name: frontend
+    pattern: 'sglang/(srt/server|api)|openai'
+    labels: [component:frontend]
+  - name: kernels
+    pattern: 'sglang/srt/layers/|kernels/|\.cu$'
+    labels: [component:kernels]
+  - name: scheduler
+    pattern: 'scheduler|policy|radix_cache'
+    labels: [component:scheduler]
+  - name: moe
+    pattern: '\bmoe\b|\bexpert\b|moe_runner'
+    labels: [component:moe]
+  - name: quantization
+    pattern: 'quant|fp8|fp4|int4|mxfp|w8a8|w4a16|awq|gptq|marlin'
+    labels: [component:quantization]
+  - name: attention
+    pattern: 'attention|flash_attn|triton_attn|extend_attention'
+    labels: [component:attention]
+  - name: mla
+    pattern: 'mla|latent.attention|sparse.mla'
+    labels: [component:mla]
+  - name: distributed
+    pattern: 'distributed|tp_|tensor.parallel|disagg'
+    labels: [component:distributed]
+  - name: speculative
+    pattern: 'speculative|spec_|eagle|medusa'
+    labels: [component:speculative-decode]
+  - name: multimodal
+    pattern: 'vision|image|multi.?modal|diffusion'
+    labels: [component:multimodal]
+  - name: lora
+    pattern: 'lora|adapter'
+    labels: [component:lora]
+  - name: structured-output
+    pattern: 'xgrammar|constrained|grammar|json.schema'
+    labels: [component:structured-output]
+  - name: amd
+    pattern: 'amd|rocm|hip|gfx9|gfx10|mi300|mi355|aiter'
+    labels: [hardware:amd]
+  - name: nvidia
+    pattern: 'cuda|nvidia|sm_|\.cu$'
+    labels: [hardware:nvidia]
+  - name: intel-xpu
+    pattern: 'xpu|intel'
+    labels: [hardware:intel-xpu]
+  - name: musa
+    pattern: 'musa'
+    labels: [hardware:musa]
+  - name: npu
+    pattern: '\bnpu\b'
+    labels: [hardware:npu]
+  - name: mlx
+    pattern: '\bmlx\b'
+    labels: [hardware:mlx]
+  - name: triton
+    pattern: 'triton'
+    labels: [backend:triton]
+  - name: flashinfer
+    pattern: 'flashinfer'
+    labels: [backend:flashinfer]
+  - name: cutlass
+    pattern: 'cutlass'
+    labels: [backend:cutlass]
+
+text_rules:
+  - name: bugfix
+    pattern: '\b(fix|fixed|bug|bugfix|crash|regression|hang|deadlock|incorrect|wrong)\b'
+    labels: [type:bugfix]
+  - name: feature
+    pattern: '\b(feat|feature|add|adds|added|new|support|enable|implement)\b'
+    labels: [type:feature]
+  - name: perf
+    pattern: '\b(perf|performance|optim|faster|speed|reduce|overhead|improve.*throughput|lazy.load)\b'
+    labels: [type:perf]
+  - name: refactor
+    pattern: '\b(refactor|cleanup|rename|reorganize|remove.dead|migrate)\b'
+    labels: [type:refactor]
+  - name: revert
+    pattern: '\brevert\b'
+    labels: [type:revert]
+  - name: deepseek
+    pattern: '\b(deepseek|ds[-_. ]?v[34]|dsv[34]|deepseek[-_ ]?r1|dsr1)\b'
+    labels: [model:deepseek]
+  - name: qwen
+    pattern: '\bqwen\b'
+    labels: [model:qwen]
+  - name: llama
+    pattern: '\bllama\b'
+    labels: [model:llama]
+  - name: gemma
+    pattern: '\bgemma\b'
+    labels: [model:gemma]
+  - name: mistral
+    pattern: '\bmistral\b'
+    labels: [model:mistral]
+  - name: minimax
+    pattern: '\bminimax\b'
+    labels: [model:minimax]
+  - name: glm
+    pattern: '\bglm\b'
+    labels: [model:glm]
+  - name: moe-text
+    pattern: '\bmoe\b|mixture.of.experts|\bexpert\b|routed.moe'
+    labels: [component:moe]
+  - name: attention-text
+    pattern: '\b(attention|attn|fmha|mha|mqa|gqa|triton.attn)\b'
+    labels: [component:attention]
+  - name: mla-text
+    pattern: '\bmla\b|latent.attention'
+    labels: [component:mla]
+  - name: quantization-text
+    pattern: '\b(quant|fp8|fp4|int4|mxfp|w8a8|awq|gptq|marlin)\b'
+    labels: [component:quantization]
+  - name: speculative-text
+    pattern: '\b(speculative|spec.decode|eagle|medusa|pcg)\b'
+    labels: [component:speculative-decode]
+  - name: multimodal-text
+    pattern: '\b(multimodal|multi.modal|vision|diffusion|image)\b'
+    labels: [component:multimodal]
+  - name: lora-text
+    pattern: '\blora|adapter\b'
+    labels: [component:lora]
+  - name: structured-output-text
+    pattern: '\b(xgrammar|constrained|grammar|json.schema|structured.output)\b'
+    labels: [component:structured-output]
+  - name: disaggregation
+    pattern: '\bdisagg|prefill.decode|pd.disagg\b'
+    labels: [component:disaggregation]
+  - name: scheduler-text
+    pattern: '\b(scheduler|radix.cache|policy)\b'
+    labels: [component:scheduler]
+  - name: distributed-text
+    pattern: '\b(distributed|tensor.parallel|tp|disagg)\b'
+    labels: [component:distributed]
+  - name: amd-text
+    pattern: '\b(amd|rocm|hip|mi300|mi355|aiter)\b'
+    labels: [hardware:amd]
+  - name: nvidia-text
+    pattern: '\b(nvidia|cuda)\b'
+    labels: [hardware:nvidia]
+  - name: xpu-text
+    pattern: '\bxpu|intel\b'
+    labels: [hardware:intel-xpu]
+  - name: musa-text
+    pattern: '\bmusa\b'
+    labels: [hardware:musa]
+  - name: npu-text
+    pattern: '\bnpu\b'
+    labels: [hardware:npu]
+  - name: mlx-text
+    pattern: '\bmlx\b'
+    labels: [hardware:mlx]
+  - name: triton-text
+    pattern: '\btriton\b'
+    labels: [backend:triton]
+  - name: flashinfer-text
+    pattern: '\bflashinfer\b'
+    labels: [backend:flashinfer]
+  - name: cutlass-text
+    pattern: '\bcutlass\b'
+    labels: [backend:cutlass]
+  - name: torch-compile
+    pattern: '\btorch.compile|jit\b'
+    labels: [backend:torch-compile]

@@ -1,0 +1,157 @@
+version: 1
+fallback_labels:
+  - component:general
+  - model:general
+  - type:misc
+  - hardware:amd
+
+path_rules:
+  - name: docs
+    pattern: '(^|/)docs/|README|\.md$'
+    labels: [type:docs]
+  - name: tests
+    pattern: '(^|/)tests/|test_'
+    labels: [type:tests]
+  - name: ci-build
+    pattern: '^\.github/|Dockerfile|requirements|setup\.py|pyproject\.toml'
+    labels: [type:ci-build]
+  - name: frontend
+    pattern: 'atom/(server|api)|openai_api'
+    labels: [component:frontend]
+  - name: kernels
+    pattern: 'atom/ops/|kernels/|csrc/'
+    labels: [component:kernels]
+  - name: plugin
+    pattern: 'plugin/|vllm_plugin'
+    labels: [component:plugin]
+  - name: mesh
+    pattern: 'atom_mesh|mesh/'
+    labels: [component:mesh]
+  - name: attention
+    pattern: 'attention|flash_attn|paged_attention'
+    labels: [component:attention]
+  - name: mla
+    pattern: 'mla|latent_attention|sparse_mla'
+    labels: [component:mla]
+  - name: moe
+    pattern: '\bmoe\b|\bexpert\b|fused_moe'
+    labels: [component:moe]
+  - name: quantization
+    pattern: 'quant|fp8|fp4|int4|mxfp|w8a8|awq|marlin'
+    labels: [component:quantization]
+  - name: lora
+    pattern: 'lora|adapter'
+    labels: [component:lora]
+  - name: distributed
+    pattern: 'distributed|tensor_parallel|disagg'
+    labels: [component:distributed]
+  - name: speculative
+    pattern: 'speculative|eagle|medusa'
+    labels: [component:speculative-decode]
+  - name: triton
+    pattern: 'triton'
+    labels: [backend:triton]
+  - name: aiter
+    pattern: 'aiter'
+    labels: [backend:aiter]
+  - name: gluon
+    pattern: 'gluon'
+    labels: [backend:gluon]
+  - name: composable-kernel
+    pattern: 'composable.?kernel|ck_tile'
+    labels: [backend:ck]
+  - name: gfx942
+    pattern: 'gfx942|mi300|mi308'
+    labels: [hardware:amd, arch:gfx942]
+  - name: gfx950
+    pattern: 'gfx950|mi355'
+    labels: [hardware:amd, arch:gfx950]
+  - name: gfx1201
+    pattern: 'gfx1201|rdna4'
+    labels: [hardware:amd, arch:gfx1201]
+
+text_rules:
+  - name: bugfix
+    pattern: '\b(fix|fixed|bug|bugfix|crash|regression|incorrect|wrong|broken)\b'
+    labels: [type:bugfix]
+  - name: feature
+    pattern: '\b(feat|feature|add|adds|added|new|support|enable|implement)\b'
+    labels: [type:feature]
+  - name: perf
+    pattern: '\b(perf|performance|optim|faster|speed|reduce|overhead)\b'
+    labels: [type:perf]
+  - name: refactor
+    pattern: '\b(refactor|cleanup|rename|reorganize)\b'
+    labels: [type:refactor]
+  - name: deepseek
+    pattern: '\b(deepseek|ds[-_. ]?v[34]|dsv[34]|deepseek[-_ ]?r1|dsr1)\b'
+    labels: [model:deepseek]
+  - name: qwen
+    pattern: '\bqwen\b'
+    labels: [model:qwen]
+  - name: llama
+    pattern: '\bllama\b'
+    labels: [model:llama]
+  - name: mistral
+    pattern: '\bmistral\b'
+    labels: [model:mistral]
+  - name: glm
+    pattern: '\bglm\b'
+    labels: [model:glm]
+  - name: gpt-oss
+    pattern: '\bgpt.?oss|quark\b'
+    labels: [model:gpt-oss]
+  - name: moe-text
+    pattern: '\bmoe\b|mixture.of.experts|\bexpert\b'
+    labels: [component:moe]
+  - name: attention-text
+    pattern: '\b(attention|attn|fmha|mha|mqa|gqa)\b'
+    labels: [component:attention]
+  - name: mla-text
+    pattern: '\bmla\b|latent.attention|nope'
+    labels: [component:mla]
+  - name: quantization-text
+    pattern: '\b(quant|fp8|fp4|int4|mxfp|w8a8|awq)\b'
+    labels: [component:quantization]
+  - name: lora-text
+    pattern: '\blora|adapter\b'
+    labels: [component:lora]
+  - name: speculative-text
+    pattern: '\b(speculative|spec.decode|eagle)\b'
+    labels: [component:speculative-decode]
+  - name: plugin-text
+    pattern: '\bplugin|vllm.plugin\b'
+    labels: [component:plugin]
+  - name: mesh-text
+    pattern: '\batom.mesh|mesh\b'
+    labels: [component:mesh]
+  - name: distributed-text
+    pattern: '\b(distributed|tensor.parallel|tp|disagg|prefill.decode)\b'
+    labels: [component:distributed]
+  - name: frontend-text
+    pattern: '\b(server|api|openai|responses.api)\b'
+    labels: [component:frontend]
+  - name: triton-text
+    pattern: '\btriton\b'
+    labels: [backend:triton]
+  - name: aiter-text
+    pattern: '\baiter\b'
+    labels: [backend:aiter]
+  - name: gluon-text
+    pattern: '\bgluon\b'
+    labels: [backend:gluon]
+  - name: ck-text
+    pattern: '\bck.tile|composable.kernel\b'
+    labels: [backend:ck]
+  - name: gfx942-text
+    pattern: '\b(gfx942|mi300|mi308)\b'
+    labels: [hardware:amd, arch:gfx942]
+  - name: gfx950-text
+    pattern: '\b(gfx950|mi355)\b'
+    labels: [hardware:amd, arch:gfx950]
+  - name: gfx1201-text
+    pattern: '\b(gfx1201|rdna4)\b'
+    labels: [hardware:amd, arch:gfx1201]
+  - name: mtp
+    pattern: '\bmtp\b|multi.token.prediction'
+    labels: [component:mtp]

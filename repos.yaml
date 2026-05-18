@@ -1,0 +1,13 @@
+repos:
+  - name: AITER
+    github: ROCm/AITER
+    rules: rules/rules-aiter.yaml
+  - name: vllm
+    github: vllm-project/vllm
+    rules: rules/rules-vllm.yaml
+  - name: sglang
+    github: sgl-project/sglang
+    rules: rules/rules-sglang.yaml
+  - name: ATOM
+    github: ROCm/ATOM
+    rules: rules/rules-atom.yaml

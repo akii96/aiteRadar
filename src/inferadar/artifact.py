@@ -1,4 +1,4 @@
-"""JSON artifact generation for AiteRadar."""
+"""JSON artifact generation for InfeRadar."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from aiteradar.classifier import Classification
+from inferadar.classifier import Classification
 
 
 FALLBACK_LABELS = {"model:general", "type:misc", "kernel:misc"}
@@ -63,12 +63,19 @@ def build_artifact(
     }
 
 
-def write_artifact(artifact: dict[str, Any], output_dir: str | Path) -> Path:
+def write_artifact(artifact: dict[str, Any], output_dir: str | Path, repo_name: str | None = None) -> Path:
     out_dir = Path(output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
     period_start = _filename_date(str(artifact["period_start"]))
     period_end = _filename_date(str(artifact["period_end"]))
-    output_path = out_dir / f"aiteradar_{period_start}_to_{period_end}.json"
+
+    if repo_name:
+        time_range_dir = out_dir / f"{period_start}_to_{period_end}"
+        time_range_dir.mkdir(parents=True, exist_ok=True)
+        output_path = time_range_dir / f"{repo_name}.json"
+    else:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        output_path = out_dir / f"inferadar_{period_start}_to_{period_end}.json"
+
     output_path.write_text(
         json.dumps(artifact, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",

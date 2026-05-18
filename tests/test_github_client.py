@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from aiteradar.github_client import GitHubClient
+from inferadar.github_client import GitHubClient
 
 
 def test_search_merged_prs_follows_pagination() -> None:

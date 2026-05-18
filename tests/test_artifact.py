@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 
-from aiteradar.artifact import build_artifact, write_artifact
-from aiteradar.classifier import Classifier
-from aiteradar.github_client import PullRequestRecord
+from inferadar.artifact import build_artifact, write_artifact
+from inferadar.classifier import Classifier
+from inferadar.github_client import PullRequestRecord
 
 
 def test_artifact_contains_summary_and_unclassified(tmp_path) -> None:
@@ -49,5 +49,5 @@ def test_artifact_contains_summary_and_unclassified(tmp_path) -> None:
     assert artifact["unclassified"][0]["number"] == 1
 
     path = write_artifact(artifact, tmp_path)
-    assert path.name == "aiteradar_2026-05-08_to_2026-05-15.json"
+    assert path.name == "inferadar_2026-05-08_to_2026-05-15.json"
     assert json.loads(path.read_text(encoding="utf-8"))["generated_at"] == "2026-05-15T02:00:00Z"
