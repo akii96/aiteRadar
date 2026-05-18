@@ -81,8 +81,9 @@ class Classifier:
 
     @classmethod
     def from_package_rules(cls) -> "Classifier":
-        rules_path = importlib.resources.files("aiteradar").joinpath("rules.yaml")
-        with rules_path.open("r", encoding="utf-8") as handle:
+        # Default to AITER rules in the rules/ directory
+        rules_path = Path(__file__).parent.parent.parent / "rules" / "rules-aiter.yaml"
+        with open(rules_path, "r", encoding="utf-8") as handle:
             return cls.from_yaml_text(handle.read())
 
     @classmethod
