@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from aiteradar import cli
+from inferadar import cli
 from inferadar.github_client import PullRequestRecord
 
 
